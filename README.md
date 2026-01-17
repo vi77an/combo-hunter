@@ -91,4 +91,4 @@ mit license - sinta-se livre para usar e modificar.
 
 ---
 
-coded with 🩸 by vi77an
+coded with 🩸 by [vi77an](t.me/vi77an)
