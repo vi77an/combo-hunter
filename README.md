@@ -1,94 +1,115 @@
-# 🕸️ combo list hunter
+# 🕸️ Combo Hunter
 
-cli tool para caçar domínios específicos em combo lists massivas.
-sua db tem 10 milhões de linhas? sem problemas.
-filtre, extraia e encontre o que precisa em segundos! 🔥
+[English](README_en.md)
 
-## ✨ features
+Combo Hunter é uma poderosa ferramenta CLI projetada para filtrar e extrair domínios específicos de listas de combos massivas. Seja lidando com 10 milhões de linhas ou mais, esta ferramenta ajuda você a encontrar exatamente o que precisa em segundos! 🔍
 
-- interface colorida e interativa
-- seleção de arquivos `.txt` do diretório
-- busca inteligente por domínios
-- exportação automática dos resultados
-- suporte a urls com `https://`
+## ⚠️ Aviso Legal
 
-## 🚀 instalação
+**Disclaimer:** Esta ferramenta é estritamente para fins educacionais e testes de segurança autorizados. O uso indevido de combo lists ou acesso não autorizado a contas é ilegal e antiético. O usuário assume total responsabilidade por quaisquer ações tomadas com esta ferramenta.
 
-```bash
-git clone https://github.com/vi77an/combo-hunter.git
-cd combo-hunter
+## ✨ Funcionalidades
+
+- 🚀 Filtragem de domínios ultra-rápida
+- 🎨 Interface CLI interativa e colorida
+- 📂 Seleção flexível de arquivos `.txt`
+- 🔍 Busca inteligente de domínios
+- 💾 Exportação automática de resultados
+- 🌐 Suporte a URLs com `https://`
+- 🔒 Tratamento robusto de erros
+
+## 🛠️ Requisitos
+
+- Python 3.6+
+- Nenhuma dependência externa
+
+## 🚀 Instalação
+
+1. Clone o repositório:
+
+   ```bash
+   git clone https://github.com/vi77an/combo-hunter.git
+   cd combo-hunter
+   ```
+
+2. Verifique se você tem Python 3.6+ instalado:
+   ```bash
+   python3 --version
+   ```
+
+## 💻 Uso
+
+1. Coloque seus arquivos de combo list `.txt` no mesmo diretório do script.
+
+2. Execute a ferramenta:
+
+   ```bash
+   python3 combo_hunter.py
+   ```
+
+3. Siga os prompts interativos:
+   - Selecione seu arquivo de combo list
+   - Digite o domínio ou termo para buscar
+   - Visualize e exporte resultados automaticamente
+
+### Exemplo de Fluxo de Trabalho
+
+```
+✓ arquivo selecionado: combos_netflix.txt
+
+digite o termo para buscar (ex: netflix): gmail
+🔍 buscando por 'gmail'...
+✓ 250 linha(s) encontrada(s)!
+✓ resultados salvos em: resultados/resultado_gmail_20260208_123456.txt
 ```
 
-nenhuma dependência externa necessária - apenas python 3.6+
-
-## 💻 uso
-
-1. coloque seus arquivos `.txt` na mesma pasta do script
-2. execute o script:
-
-```bash
-python combo_hunter.py
-```
-
-3. selecione o arquivo desejado
-4. digite o termo para buscar (ex: `netflix`, `globo`)
-5. os resultados serão salvos em `resultados/`
-
-## 📝 formato esperado
-
-as linhas devem seguir o padrão:
-```
-dominio.com:login:senha
-https://dominio.com:login:senha
-```
-
-## 🎨 preview
-
-```
- ██▒   █▓ ██▓ ██▓     ██▓    ▄▄▄       ███▄    █ 
-▓██░   █▒▓██▒▓██▒    ▓██▒   ▒████▄     ██ ▀█   █ 
- ▓██  █▒░▒██▒▒██░    ▒██░   ▒██  ▀█▄  ▓██  ▀█ ██▒
-  ▒██ █░░░██░▒██░    ▒██░   ░██▄▄▄▄██ ▓██▒  ▐▌██▒
-   ▒▀█░  ░██░░██████▒░██████▒▓█   ▓██▒▒██░   ▓██░
-
-          ✧ combo list filter tool ✧ 
-              ⸸ bloody coded by vi77an ⸸
-    
-arquivos disponíveis:
-
-  [1] comboteste.txt (0.00 mb)
-  [2] dbteste.txt (0.00 mb)
-
-escolha o número do arquivo: 1
-✓ arquivo selecionado: comboteste.txt
-
-digite o termo para buscar (ex: netflix): oie
-
-🔍 buscando por 'oie'...
-⚠  nenhum resultado encontrado para 'oie'.
-deseja tentar outro termo? (s/n): n
-
-👋 até logo!
-```
-
-## 📦 estrutura
+## 📦 Estrutura do Projeto
 
 ```
 combo-hunter/
-├── combo_hunter.py    # script principal
-├── README.md          # documentação
-├── .gitignore         # arquivos ignorados
-└── resultados/        # outputs (auto-criada)
+├── combo_hunter.py    # Script principal
+├── README.md          # Documentação
+├── README_en.md       # Documentação em Inglês
+├── .gitignore         # Arquivo de ignorados do Git
+└── resultados/        # Diretório de resultados exportados
 ```
 
-## ⚠️ aviso legal
+## 🔍 Capacidades de Busca
 
-esta ferramenta é destinada apenas para fins educacionais e testes de segurança autorizados. o uso inadequado é de responsabilidade do usuário.
+- Busca sem distinção entre maiúsculas e minúsculas
+- Extração de domínios de diversos formatos de entrada
+- Manipula URLs e combo lists em texto simples
+- Suporta correspondências parciais e completas de domínios
 
-## 📄 licença
+## 📝 Formato de Entrada
 
-mit license - sinta-se livre para usar e modificar.
+Formatos de combo list suportados:
+
+```
+dominio.com:login:senha
+https://dominio.com:login:senha
+login:senha@dominio.com
+```
+
+## 🛡️ Privacidade & Segurança
+
+- Nenhuma dependência externa
+- Processamento de arquivos local
+- Nenhuma conexão com a internet necessária
+- Resultados salvos localmente no diretório `resultados/`
+
+## 🤝 Contribuindo
+
+1. Faça um fork do repositório
+2. Crie sua branch de funcionalidade (`git checkout -b feature/NovaFuncionalidade`)
+3. Commit suas mudanças (`git commit -m 'Adiciona NovaFuncionalidade'`)
+4. Envie para a branch (`git push origin feature/NovaFuncionalidade`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Distribuído sob a Licença MIT. Veja `LICENSE` para mais informações.
 
 ---
 
-coded with 🩸 by [vi77an](https://t.me/vi77an)
+**Coded with 🩷 by [@vi77an](https://t.me/vi77an)**
