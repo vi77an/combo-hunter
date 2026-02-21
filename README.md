@@ -8,22 +8,22 @@ Combo Hunter é uma poderosa ferramenta CLI projetada para filtrar e extrair dom
 
 **Disclaimer:** Esta ferramenta é estritamente para fins educacionais e testes de segurança autorizados. O uso indevido de combo lists ou acesso não autorizado a contas é ilegal e antiético. O usuário assume total responsabilidade por quaisquer ações tomadas com esta ferramenta.
 
-## ✨ Funcionalidades
+## Funcionalidades
 
-- 🚀 Filtragem de domínios ultra-rápida
-- 🎨 Interface CLI interativa e colorida
-- 📂 Seleção flexível de arquivos `.txt`
-- 🔍 Busca inteligente de domínios
-- 💾 Exportação automática de resultados
-- 🌐 Suporte a URLs com `https://`
-- 🔒 Tratamento robusto de erros
+- Filtragem de domínios ultra-rápida
+- Interface CLI interativa e colorida
+- Seleção flexível de arquivos `.txt`
+- Busca inteligente de domínios
+- Exportação automática de resultados
+- Suporte a URLs com `https://`
+- Tratamento robusto de erros
 
-## 🛠️ Requisitos
+## Requisitos
 
 - Python 3.6+
 - Nenhuma dependência externa
 
-## 🚀 Instalação
+## Instalação
 
 1. Clone o repositório:
 
@@ -37,7 +37,7 @@ Combo Hunter é uma poderosa ferramenta CLI projetada para filtrar e extrair dom
    python3 --version
    ```
 
-## 💻 Uso
+## Uso
 
 1. Coloque seus arquivos de combo list `.txt` no mesmo diretório do script.
 
@@ -63,7 +63,7 @@ digite o termo para buscar (ex: netflix): gmail
 ✓ resultados salvos em: resultados/resultado_gmail_20260208_123456.txt
 ```
 
-## 📦 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 combo-hunter/
@@ -74,14 +74,14 @@ combo-hunter/
 └── resultados/        # Diretório de resultados exportados
 ```
 
-## 🔍 Capacidades de Busca
+## Capacidades de Busca
 
 - Busca sem distinção entre maiúsculas e minúsculas
 - Extração de domínios de diversos formatos de entrada
 - Manipula URLs e combo lists em texto simples
 - Suporta correspondências parciais e completas de domínios
 
-## 📝 Formato de Entrada
+## Formato de Entrada
 
 Formatos de combo list suportados:
 
@@ -91,14 +91,14 @@ https://dominio.com:login:senha
 login:senha@dominio.com
 ```
 
-## 🛡️ Privacidade & Segurança
+## Privacidade & Segurança
 
 - Nenhuma dependência externa
 - Processamento de arquivos local
 - Nenhuma conexão com a internet necessária
 - Resultados salvos localmente no diretório `resultados/`
 
-## 🤝 Contribuindo
+## Contribuindo
 
 1. Faça um fork do repositório
 2. Crie sua branch de funcionalidade (`git checkout -b feature/NovaFuncionalidade`)
@@ -106,7 +106,7 @@ login:senha@dominio.com
 4. Envie para a branch (`git push origin feature/NovaFuncionalidade`)
 5. Abra um Pull Request
 
-## 📄 Licença
+## Licença
 
 Distribuído sob a Licença MIT. Veja `LICENSE` para mais informações.
 
