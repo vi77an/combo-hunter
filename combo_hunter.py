@@ -79,6 +79,9 @@ class Progresso:
         sys.stdout.flush()
 
 
+# ─── Constantes de regex (compiladas uma única vez) ───────────────────────────
+EMAIL_PATTERN = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
+
 # ─── Funções de chunk para multiprocessing ────────────────────────────────────
 # Precisam ser top-level para o pickle do mp.Pool funcionar corretamente.
 
@@ -109,11 +112,10 @@ def _buscar_email_chunk(args):
     """Busca termo dentro de endereços de e-mail na linha."""
     linhas, termo = args
     termo = termo.lower()
-    email_pattern = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
     resultados = []
     for linha in linhas:
         try:
-            match = email_pattern.search(linha)
+            match = EMAIL_PATTERN.search(linha)
             if match and termo in match.group(0).lower():
                 resultados.append(linha.strip())
         except Exception:
