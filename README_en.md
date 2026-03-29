@@ -18,6 +18,8 @@
 
 </div>
 
+**🌐 Translations:** [Português](README.md) · [Spanish](README_es.md)
+
 ---
 
 ## about
