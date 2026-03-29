@@ -1,110 +1,64 @@
-# 🕸️ Combo Hunter
+# Combo Hunter
 
 [English](README_en.md)
 
-Combo Hunter é uma poderosa ferramenta CLI projetada para filtrar e extrair domínios específicos de listas de combos massivas. Seja lidando com 10 milhões de linhas ou mais, esta ferramenta ajuda você a encontrar exatamente o que precisa em segundos! 🔍
+Ferramenta CLI para filtrar e extrair dados de listas de combos.
 
 ## ⚠️ Aviso Legal
 
-**Disclaimer:** Esta ferramenta é estritamente para fins educacionais e testes de segurança autorizados. O uso indevido de combo lists ou acesso não autorizado a contas é ilegal e antiético. O usuário assume total responsabilidade por quaisquer ações tomadas com esta ferramenta.
+Esta ferramenta e para fins educacionais e testes de seguranca autorizados. O uso indevido de combo lists ou acesso nao autorizado a contas e ilegal. **O usuario assume total responsabilidade**.
 
 ## Funcionalidades
 
-- Filtragem de domínios ultra-rápida
-- Interface CLI interativa e colorida
-- Seleção flexível de arquivos `.txt`
-- Busca inteligente de domínios
-- Exportação automática de resultados
-- Suporte a URLs com `https://`
-- Tratamento robusto de erros
+- Modo Busca: filtrar dados por termo
+- Modo Limpar: formatar arquivos (url:log:pass -> log:pass)
+- 4 tipos de busca: dominios, emails completos, usuarios e URLs
+- Organização automatica por categoria
+- Verificação automatica de Python
 
 ## Requisitos
 
 - Python 3.6+
-- Nenhuma dependência externa
+- Nenhuma dependencia externa
 
 ## Instalação
 
-1. Clone o repositório:
+```bash
+git clone git@github.com:vi77an/combo-hunter.git
+cd combo-hunter
+python3 --version
+```
 
-   ```bash
-   git clone https://github.com/vi77an/combo-hunter.git
-   cd combo-hunter
-   ```
+## Estrutura
 
-2. Verifique se você tem Python 3.6+ instalado:
-   ```bash
-   python3 --version
-   ```
+```
+combos/          # seus arquivos de db.txt aqui
+limpar/          # arquivos para formatar aqui
+resultados/      # resultados gerados
+  ├── dominios/
+  ├── emails/
+  ├── usuarios/
+  ├── urls/
+  └── limpar/
+```
 
 ## Uso
 
-1. Coloque seus arquivos de combo list `.txt` no mesmo diretório do script.
-
-2. Execute a ferramenta:
-
-   ```bash
-   python3 combo_hunter.py
-   ```
-
-3. Siga os prompts interativos:
-   - Selecione seu arquivo de combo list
-   - Digite o domínio ou termo para buscar
-   - Visualize e exporte resultados automaticamente
-
-### Exemplo de Fluxo de Trabalho
-
-```
-✓ arquivo selecionado: combos_netflix.txt
-
-digite o termo para buscar (ex: netflix): gmail
-🔍 buscando por 'gmail'...
-✓ 250 linha(s) encontrada(s)!
-✓ resultados salvos em: resultados/resultado_gmail_20260208_123456.txt
+```bash
+python3 combo_hunter.py
+ou
+python combo_hunter.py
+ou
+py combo_hunter.py
 ```
 
-## Estrutura do Projeto
+Escolha o modo (1 = buscar, 2 = limpar) e siga as instruções.
 
-```
-combo-hunter/
-├── combo_hunter.py    # Script principal
-├── README.md          # Documentação
-├── README_en.md       # Documentação em Inglês
-├── .gitignore         # Arquivo de ignorados do Git
-└── resultados/        # Diretório de resultados exportados
-```
+## Preview
 
-## Capacidades de Busca
+<img width="1026" height="725" alt="preview" src="https://github.com/user-attachments/assets/9d0c9d27-732e-4406-9582-26ec7f99d04c" />
 
-- Busca sem distinção entre maiúsculas e minúsculas
-- Extração de domínios de diversos formatos de entrada
-- Manipula URLs e combo lists em texto simples
-- Suporta correspondências parciais e completas de domínios
-
-## Formato de Entrada
-
-Formatos de combo list suportados:
-
-```
-dominio.com:login:senha
-https://dominio.com:login:senha
-login:senha@dominio.com
-```
-
-## Privacidade & Segurança
-
-- Nenhuma dependência externa
-- Processamento de arquivos local
-- Nenhuma conexão com a internet necessária
-- Resultados salvos localmente no diretório `resultados/`
-
-## Contribuindo
-
-1. Faça um fork do repositório
-2. Crie sua branch de funcionalidade (`git checkout -b feature/NovaFuncionalidade`)
-3. Commit suas mudanças (`git commit -m 'Adiciona NovaFuncionalidade'`)
-4. Envie para a branch (`git push origin feature/NovaFuncionalidade`)
-5. Abra um Pull Request
+---
 
 ## Licença
 
