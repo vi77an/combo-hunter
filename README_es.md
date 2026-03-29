@@ -18,7 +18,7 @@
 
 </div>
 
-**🌐 Translations:** [Português](README.md) · [English](README_en.md)
+**🌐 Traducciones:** [Portugués](README.md) · [Inglés](README_en.md)
 
 ---
 
