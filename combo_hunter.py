@@ -29,6 +29,9 @@ LIMIAR_MULTIPROCESSING = 200_000
 
 NUM_PROCESSOS = mp.cpu_count()
 
+# Regex para captura de e-mails
+EMAIL_PATTERN = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
+
 
 class Progresso:
     def __init__(self, total):
@@ -109,11 +112,10 @@ def _buscar_email_chunk(args):
     """Busca termo dentro de endereços de e-mail na linha."""
     linhas, termo = args
     termo = termo.lower()
-    email_pattern = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
     resultados = []
     for linha in linhas:
         try:
-            match = email_pattern.search(linha)
+            match = EMAIL_PATTERN.search(linha)
             if match and termo in match.group(0).lower():
                 resultados.append(linha.strip())
         except Exception:
@@ -287,8 +289,7 @@ class ComboHunter:
     def extrair_email_completo(self, linha):
         try:
             linha = linha.strip()
-            email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
-            match = re.search(email_pattern, linha)
+            match = EMAIL_PATTERN.search(linha)
             if match:
                 return match.group(0).lower()
             return None
