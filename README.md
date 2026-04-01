@@ -1,4 +1,3 @@
-<div align="center">
 
 ```
 ⠀⠀⠀⠀⠀⠀⠀⠠⡧⠀⠀⠄⠀⣆
@@ -10,15 +9,17 @@
 ⠀⠀⠀⠀⠀⠀⠀⢹⣿⡿            coded by t.me/vi77an
 ```
 
+<div align="center">
+    
 **combo hunter** · ferramenta de filtragem e limpeza de combo lists
 
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-linux%20%7C%20windows%20%7C%20macos-lightgrey?style=flat-square)
 
-</div>
 
 **🌐 Traduções:** [Inglês](README_en.md) · [Espanhol](README_es.md)
+</div>
 
 ---
 
