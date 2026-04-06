@@ -82,27 +82,93 @@ class Progresso:
 # ─── Constantes de regex (compiladas uma única vez) ───────────────────────────
 EMAIL_PATTERN = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
 
+
+# ─── Parser robusto de linha url:login:senha ──────────────────────────────────
+
+def parse_linha(linha):
+    """
+    Retorna (url, login, senha) com tratamento robusto de ':' em qualquer campo.
+
+    Estratégia:
+      - URL   → identificada pelo prefixo http:// ou https://
+      - Login → contém '@' quando é e-mail; usado como âncora para split
+                sem '@', assume-se que login é o campo imediatamente após a URL
+      - Senha → TUDO que sobrar após o login (preserva ':' internos)
+
+    Casos cobertos:
+      https://site.com:user@g.com:minha:senha  → url, user@g.com, minha:senha
+      https://site.com:8080:user:pass:word      → url+porta, user, pass:word
+      https://site.com:user:pass:word           → url, user, pass:word
+      user@email.com:minha:senha               → "", user@email.com, minha:senha
+      username:senha:complexa                  → "", username, senha:complexa
+    """
+    linha = linha.strip()
+
+    if "://" in linha:
+        proto_end = linha.index("://") + 3      # posição logo após "://"
+        protocolo = linha[:proto_end]           # "https://"
+        resto = linha[proto_end:]               # tudo após o protocolo
+
+        at_pos = resto.find("@")
+
+        if at_pos != -1:
+            # Login contém '@': acha o ':' imediatamente antes do '@'
+            # para separar URL do login
+            colon_before_at = resto.rfind(":", 0, at_pos)
+            if colon_before_at != -1:
+                url = protocolo + resto[:colon_before_at]
+                after = resto[colon_before_at + 1:]     # "user@email.com:senha"
+                # Senha começa no ':' após o '@'
+                colon_after_at = after.find(":", after.index("@"))
+                if colon_after_at != -1:
+                    login = after[:colon_after_at]
+                    senha = after[colon_after_at + 1:]  # preserva ':' internos
+                else:
+                    login = after
+                    senha = ""
+            else:
+                # '@' está dentro do próprio host/path (raro), sem split possível
+                url, login, senha = protocolo + resto, "", ""
+        else:
+            # Sem '@': split em no máximo 3 partes → host : login : resto_senha
+            partes = resto.split(":", 2)
+            if len(partes) == 3:
+                url   = protocolo + partes[0]
+                login = partes[1]
+                senha = partes[2]           # tudo que sobrou, ':' inclusos
+            elif len(partes) == 2:
+                url   = protocolo + partes[0]
+                login = partes[1]
+                senha = ""
+            else:
+                url, login, senha = protocolo + resto, "", ""
+
+    else:
+        # Sem URL: formato login:senha
+        # split em apenas 1 → senha preserva ':' internos
+        partes = linha.split(":", 1)
+        url   = ""
+        login = partes[0]
+        senha = partes[1] if len(partes) > 1 else ""
+
+    return url, login, senha
+
+
 # ─── Funções de chunk para multiprocessing ────────────────────────────────────
 # Precisam ser top-level para o pickle do mp.Pool funcionar corretamente.
 
+
 def _buscar_dominio_chunk(args):
-    """Busca termo no campo de domínio (primeiro campo antes de :login:senha)."""
+    """Busca termo no campo de domínio (url ou login quando não há URL)."""
     linhas, termo = args
     termo = termo.lower()
     resultados = []
     for linha in linhas:
         try:
-            linha_strip = linha.strip()
-            # Detecta se a linha tem URL (http/https) para extrair domínio corretamente
-            if "http://" in linha_strip or "https://" in linha_strip:
-                # formato: https://site.com:login:senha → domínio = site.com
-                sem_proto = linha_strip.replace("https://", "").replace("http://", "")
-                dominio = sem_proto.split(":")[0]
-            else:
-                # formato: login:senha → pega o campo antes do primeiro :
-                dominio = linha_strip.split(":")[0]
-            if termo in dominio.lower():
-                resultados.append(linha_strip)
+            url, login, _ = parse_linha(linha)
+            campo = url if url else login
+            if termo in campo.lower():
+                resultados.append(linha.strip())
         except Exception:
             pass
     return resultados
@@ -126,25 +192,16 @@ def _buscar_email_chunk(args):
 def _buscar_usuario_chunk(args):
     """
     Busca termo no campo de usuário/login.
-    Pula o campo de URL quando o formato for url:login:senha.
+    Usa parse_linha para extrair o login corretamente mesmo com ':' na URL ou senha.
     """
     linhas, termo = args
     termo = termo.lower()
     resultados = []
     for linha in linhas:
         try:
-            linha_strip = linha.strip()
-            if "http://" in linha_strip or "https://" in linha_strip:
-                # formato: https://site.com:login:senha → usuario = partes[1] após remover proto
-                sem_proto = linha_strip.replace("https://", "").replace("http://", "")
-                partes = sem_proto.split(":")
-                usuario = partes[1] if len(partes) >= 2 else ""
-            else:
-                # formato: login:senha
-                partes = linha_strip.split(":")
-                usuario = partes[0] if partes else ""
-            if termo in usuario.lower():
-                resultados.append(linha_strip)
+            _, login, _ = parse_linha(linha)
+            if termo in login.lower():
+                resultados.append(linha.strip())
         except Exception:
             pass
     return resultados
@@ -165,6 +222,7 @@ def _buscar_url_chunk(args):
 
 
 # ─── Classe principal ─────────────────────────────────────────────────────────
+
 
 class ComboHunter:
     def __init__(self):
@@ -255,10 +313,14 @@ class ComboHunter:
 
                 if 0 <= indice < len(arquivos):
                     arquivo_selecionado = arquivos[indice]
-                    print(f"✓ arquivo selecionado: {GREEN}{BOLD}{arquivo_selecionado}{RESET}")
+                    print(
+                        f"✓ arquivo selecionado: {GREEN}{BOLD}{arquivo_selecionado}{RESET}"
+                    )
                     return arquivo_selecionado
                 else:
-                    print(f"{RED}✗ número fora do intervalo. escolha entre 1 e {len(arquivos)}.{RESET}")
+                    print(
+                        f"{RED}✗ número fora do intervalo. escolha entre 1 e {len(arquivos)}.{RESET}"
+                    )
 
             except KeyboardInterrupt:
                 print(f"\n{RED}✗ operação cancelada pelo usuário.{RESET}")
@@ -266,25 +328,18 @@ class ComboHunter:
 
     def extrair_dominio(self, linha):
         try:
-            linha = linha.strip()
-            if "http://" in linha or "https://" in linha:
-                sem_proto = linha.replace("https://", "").replace("http://", "")
-                return sem_proto.split(":")[0].lower()
-            return linha.split(":")[0].lower()
+            url, login, _ = parse_linha(linha)
+            campo = url if url else login
+            return campo.lower()
         except Exception:
-            return linha.lower()
+            return linha.strip().lower()
 
     def extrair_usuario(self, linha):
         try:
-            linha = linha.strip()
-            if "http://" in linha or "https://" in linha:
-                sem_proto = linha.replace("https://", "").replace("http://", "")
-                partes = sem_proto.split(":")
-                return partes[1].lower() if len(partes) >= 2 else linha.lower()
-            partes = linha.split(":")
-            return partes[0].lower() if partes else linha.lower()
+            _, login, _ = parse_linha(linha)
+            return login.lower()
         except Exception:
-            return linha.lower()
+            return linha.strip().lower()
 
     def extrair_email_completo(self, linha):
         try:
@@ -335,9 +390,7 @@ class ComboHunter:
 
             # Para arquivos pequenos, não vale o custo do multiprocessing
             if total < LIMIAR_MULTIPROCESSING:
-                print(
-                    f"{MAUVE}iniciando busca linear ({total:,} linhas)...{RESET}"
-                )
+                print(f"{MAUVE}iniciando busca linear ({total:,} linhas)...{RESET}")
                 progresso = Progresso(total)
                 progresso.iniciar()
                 resultados = []
@@ -362,7 +415,7 @@ class ComboHunter:
 
                 chunk_size = max(1, total // NUM_PROCESSOS)
                 chunks = [
-                    (linhas[i: i + chunk_size], termo_busca)
+                    (linhas[i : i + chunk_size], termo_busca)
                     for i in range(0, total, chunk_size)
                 ]
 
@@ -417,7 +470,9 @@ class ComboHunter:
                 for linha in resultados:
                     f.write(linha + "\n")
 
-            print(f"\n{GREEN}{BOLD}✓ {len(resultados)} resultado(s) salvo(s) em:{RESET}")
+            print(
+                f"\n{GREEN}{BOLD}✓ {len(resultados)} resultado(s) salvo(s) em:{RESET}"
+            )
             print(f"  {MAUVE}{BOLD}{caminho_completo}{RESET}\n")
             return True
 
@@ -490,7 +545,9 @@ class ComboHunter:
 
                 if 0 <= indice < len(arquivos):
                     arquivo_selecionado = arquivos[indice]
-                    print(f"✓ arquivo selecionado: {GREEN}{BOLD}{Path(arquivo_selecionado).name}{RESET}")
+                    print(
+                        f"✓ arquivo selecionado: {GREEN}{BOLD}{Path(arquivo_selecionado).name}{RESET}"
+                    )
                     return arquivo_selecionado
                 else:
                     print(f"{RED}✗ numero fora do intervalo.{RESET}")
@@ -500,16 +557,12 @@ class ComboHunter:
                 return None
 
     def detectar_formato(self, linha):
-        linha = linha.strip()
-
-        if "http://" in linha or "https://" in linha:
+        url, login, senha = parse_linha(linha)
+        if url:
             return "url"
-
-        partes = linha.count(":")
-
-        if partes >= 2:
+        if senha:
             return "logpass"
-        elif partes == 1:
+        if login:
             return "login"
         return "desconhecido"
 
@@ -559,39 +612,33 @@ class ComboHunter:
     def formatar_para_logpass(self, linhas):
         """
         Converte url:login:senha → login:senha.
-        FIX: extrai corretamente login:senha (partes[2] + ':' + partes[3]),
-        não apenas partes[3] (que seria só a senha).
+        Usa parse_linha para extrair corretamente mesmo com ':' na URL ou senha.
         """
         resultados = []
         for linha in linhas:
-            if "http://" in linha or "https://" in linha:
-                # formato esperado: https://site.com:login:senha
-                # split(maxsplit=3) → ['https', '//site.com', 'login', 'senha']
-                partes = linha.split(":", 3)
-                if len(partes) >= 4:
-                    # partes[0] = 'https', partes[1] = '//site.com'
-                    # partes[2] = login, partes[3] = senha
-                    logpass = f"{partes[2]}:{partes[3]}"
-                    resultados.append(logpass)
+            url, login, senha = parse_linha(linha)
+            if url:
+                # tinha URL: descarta e monta login:senha preservando ':' na senha
+                if login or senha:
+                    resultados.append(f"{login}:{senha}")
                 else:
-                    resultados.append(linha)
+                    resultados.append(linha)  # fallback: linha malformada
             else:
-                resultados.append(linha)
+                resultados.append(linha)  # sem URL: mantém como está
         return resultados
 
     def formatar_url_logpass(self, linhas):
         """
-        Mantém linhas que já têm URL; linhas sem URL são mantidas como estão
-        (não faz sentido inventar uma URL para login:senha).
+        Mantém apenas linhas que já têm URL, normalizando via parse_linha.
+        Linhas sem URL são mantidas como estão.
         """
         resultados = []
         for linha in linhas:
-            if "http://" in linha or "https://" in linha:
-                resultados.append(linha)
+            url, login, senha = parse_linha(linha)
+            if url:
+                # Reconstrói normalizado: url:login:senha
+                resultados.append(f"{url}:{login}:{senha}")
             else:
-                # FIX: não prefixar https:// em login:senha — isso geraria
-                # 'https://user@email.com:senha', que é inválido semanticamente.
-                # Mantém a linha original.
                 resultados.append(linha)
         return resultados
 
@@ -646,7 +693,9 @@ class ComboHunter:
                         elif tipo_busca == "emails":
                             resultados = self.buscar_emails(arquivo_atual, termo_busca)
                         elif tipo_busca == "usuarios":
-                            resultados = self.buscar_usuarios(arquivo_atual, termo_busca)
+                            resultados = self.buscar_usuarios(
+                                arquivo_atual, termo_busca
+                            )
                         else:
                             resultados = self.buscar_urls(arquivo_atual, termo_busca)
 
@@ -654,7 +703,9 @@ class ComboHunter:
                             self.salvar_resultados(resultados, termo_busca, tipo_busca)
                             break
                         else:
-                            print(f"{RED}⚠  nenhum resultado encontrado para '{termo_busca}'.{RESET}")
+                            print(
+                                f"{RED}⚠  nenhum resultado encontrado para '{termo_busca}'.{RESET}"
+                            )
                             if not self.perguntar_sim_nao("deseja tentar outro termo?"):
                                 break
 
